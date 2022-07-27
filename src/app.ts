@@ -1,37 +1,17 @@
 // src/index.ts
 import express from 'express';
-import Shopify, { ApiVersion } from '@shopify/shopify-api';
-require('dotenv').config();
 
 const app = express();
+app.use(express.json());
 
-const { API_KEY, API_SECRET_KEY, SCOPES, SHOP, HOST, HOST_SCHEME } = process.env;
-
-Shopify.Context.initialize({
-  API_KEY,
-  API_SECRET_KEY,
-  SCOPES: [SCOPES],
-  HOST_NAME: HOST.replace(/https?:\/\//, ""),
-  HOST_SCHEME,
-  IS_EMBEDDED_APP: {boolean},
-  API_VERSION: ApiVersion.{version} // all supported versions are available, as well as "unstable" and "unversioned"
+app.post('/webhook', async (req, res) => {
+  console.log(req.body)
+  return res.send('Data received');
 });
-// Storing the currently active shops in memory will force them to re-login when your server restarts. You should
-// persist this object in your app.
-const ACTIVE_SHOPIFY_SHOPS: { [key: string]: string | undefined } = {};
 
-// the rest of the example code goes here
-
-app.get("/", async (req, res) => {
-   // This shop hasn't been seen yet, go through OAuth to create a session
-  if (ACTIVE_SHOPIFY_SHOPS[SHOP] === undefined) {
-     // not logged in, redirect to login
-    res.redirect(`/login`);
-  } else {
-    res.send("Hello world!");
-    // Load your app skeleton page with App Bridge, and do something amazing!
-    res.end();
-  }
+app.post('/webhook/orderpayment', async (req, res) => {
+  console.log(req.body)
+  return res.send('Data received');
 });
 
 app.listen(3000, () => {
